@@ -374,31 +374,10 @@ class World{
         pq.insert(c2);
 
         //System.out.println("You entered:\nGrasslands:\n"+g1.toString()+"\n"+g2.toString());
-        System.out.println("Herbivores:\n"+h1.toString()+"\n"+h2.toString());
-        System.out.println("Carnivores:\n"+c1.toString()+"\n"+c2.toString());
+        //System.out.println("Herbivores:\n"+h1.toString()+"\n"+h2.toString());
+        //System.out.println("Carnivores:\n"+c1.toString()+"\n"+c2.toString());
 
-        System.out.println("Printing queue: ");
-        pq.printHeap();
-
-        pq.remove();
-
-System.out.println("Printing queue: ");
-
-
-        pq.printHeap();
-        pq.remove();
-
-System.out.println("Printing queue: ");
         
-        pq.printHeap();
-        pq.remove();
-
-   System.out.println("Printing queue: ");
-             pq.printHeap();
-        pq.remove();
-System.out.println("Printing queue: ");
-        
-        pq.printHeap();
 
         
         
