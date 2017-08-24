@@ -63,56 +63,163 @@ class MinHeap{
         int parentPos = (i-1)/2;
         Animal last = arr[i];
 
-        while(i>0 && arr[parentPos].getTimeStamp()>last.getTimeStamp()){
-            arr[i] = arr[parentPos];
-            i = parentPos;
-            parentPos = (parentPos-1)/2;
+        if(arr[parentPos].getTimeStamp()>last.getTimeStamp())
+        {
+            while(i>0 && arr[parentPos].getTimeStamp()>last.getTimeStamp()){
+                arr[i] = arr[parentPos];
+                i = parentPos;
+                parentPos = (parentPos-1)/2;
+
+            }
+            arr[i] = last;
+            return;
+        }
+        if(arr[parentPos].getTimeStamp()==last.getTimeStamp()){
+
+            if(arr[parentPos].getHealth()<last.getHealth()){
+                while(i>0 && arr[parentPos].getHealth()<last.getHealth()){
+                    arr[i] = arr[parentPos];
+                    i = parentPos;
+                    parentPos = (parentPos-1)/2;
+            }
+            arr[i] = last;
+            return;
+            }
+
+            if(arr[parentPos].getHealth()==last.getHealth()){
+                if(arr[parentPos].getType()<last.getType()){
+                while(i>0 && arr[parentPos].getType()<last.getType()){
+                arr[i] = arr[parentPos];
+                i = parentPos;
+                parentPos = (parentPos-1)/2;
+                }
+                arr[i] = last;
+                return;
+                }
+        
+                if (arr[parentPos].getType()==last.getType()) {
+                    if(arr[parentPos].getDistFromOrigin()>last.getDistFromOrigin()){
+                    while(i>0 && arr[parentPos].getDistFromOrigin()>last.getDistFromOrigin()){
+                    arr[i] = arr[parentPos];
+                    i = parentPos;
+                    parentPos = (parentPos-1)/2;
+                    }
+                    arr[i] = last;
+                    return;
+                    }
+                }
+
+            }
 
         }
-        arr[i] = last;
+
+        
     }
 
-    public Animal remove(){
+    public void remove(){
         Animal root = arr[0];
         arr[0] = arr[--size];
+        //System.out.println("Trickling down");
         trickleDown();
-        return root;
+        //System.out.println("Trickled down");
     }
 
     public void trickleDown(){
+        //System.out.println("in the method");
         int min;
         Animal start = arr[0];
         int i = 0;
-        while(i<size/2){
-            int left = 2*i+1;
-            int right = left+1;
-            if(right<size && arr[left].getTimeStamp() > arr[right].getTimeStamp()){
-                min = right;
-            }
-            else{
-                min = left;
-            }
 
-            if(start.getTimeStamp() <= arr[min].getTimeStamp()){
+        while(i<size/2){
+            //System.out.println("in the while loop");
+            //System.out.println("start "+start.toString());
+            int left = 2*i+1;
+            //System.out.println("left "+arr[left].toString());
+
+            int right = left+1;
+            //System.out.println("right "+arr[right].toString());
+
+            min = left;
+            //System.out.println("min is left");
+            if(right<size){
+            if(arr[left].getTimeStamp() > arr[right].getTimeStamp()){
+                min = right;
+
+            //System.out.println("min is right");
+            }
+            if(arr[left].getTimeStamp() == arr[right].getTimeStamp()){
+                if(arr[left].getHealth() < arr[right].getHealth()){
+                    min = right;
+
+            //System.out.println("min is left");
+                }
+                if(arr[left].getHealth() == arr[right].getHealth()){
+                    if(arr[left].getType() < arr[right].getType()){
+                        min = right;
+
+            //System.out.println("min is left");
+                    }
+                    if(arr[left].getType() == arr[right].getType()){
+                        if(arr[left].getDistFromOrigin() > arr[right].getDistFromOrigin()){
+                            min = right;
+
+            //System.out.println("min is left");
+                        }
+                    }
+
+                }
+
+            }
+        }     
+
+        //System.out.println("next");
+
+            if(start.getTimeStamp() < arr[min].getTimeStamp()){
+                //System.out.println("Breaking because of timestamp");
                 break;
+            }
+            if(start.getTimeStamp()==arr[min].getTimeStamp()){
+                if(start.getHealth() > arr[min].getHealth())
+                    {//System.out.println("Breaking because of health");
+                    break;}
+                if(start.getHealth() == arr[min].getHealth()){
+                    if(start.getType() > arr[min].getType())
+                        {//System.out.println("Breaking because of type");
+                        break;}
+                    if(start.getType()==arr[min].getType()){
+                        if(start.getDistFromOrigin() < arr[min].getDistFromOrigin())
+                            {//System.out.println("Breaking because of distance from origin");
+                            break;}
+                    }
+                }
             }
 
             arr[i] = arr[min];
             i = min;
         }
+
         arr[i] = start;
     }
+
+        public void printHeap(){
+        for(int i=0; i<size; i++){
+            System.out.println(arr[i].toString());
+        }
+    }
+
+
 
 
 }
 
 abstract class Animal {
-    protected int x;
-    protected int y;
+    protected float x;
+    protected float y;
     protected int t;
     protected int health;
+    protected int type;
 
-    public Animal(int x, int y, int t, int health){
+    public Animal(float x, float y, int t, int health){
         this.x = x;
         this.y = y;
         this.t = t;
@@ -122,6 +229,19 @@ abstract class Animal {
     public int getTimeStamp(){
         return t;
     }
+
+    public int getHealth(){
+        return health;
+    }
+
+    public int getType(){
+        return type;
+    }
+
+    public double getDistFromOrigin(){
+        return Math.sqrt(x*x+y*y);
+    }
+
 
     public String toString(){
         return "x: "+x+" y: "+y+" timestamp: "+t+" health: "+health;
@@ -134,14 +254,17 @@ class Herbivore extends Animal{
     private static int initial_health;
     private static int grassCap;
 
-    public Herbivore(int x, int y, int t){
+
+    public Herbivore(float x, float y, int t){
         super(x, y, t, initial_health);
+        type = 1;
     }
 
-    public Herbivore(int x, int y, int t, int h, int grassCap){
+    public Herbivore(float x, float y, int t, int h, int grassCap){
         super(x, y, t, h);
         this.initial_health = h;
         this.grassCap = grassCap;
+        type = 1;
     }
 
     public String toString(){
@@ -153,13 +276,16 @@ class Herbivore extends Animal{
 class Carnivore extends Animal{
     private static int initial_health;
 
-    public Carnivore(int x, int y, int t){
+
+    public Carnivore(float x, float y, int t){
         super(x, y, t, initial_health);
+        type = 0;
     }
 
-    public Carnivore(int x, int y, int t, int h){
+    public Carnivore(float x, float y, int t, int h){
         super(x, y, t, h);
         this.initial_health = h;
+        type = 0;
     }
 
     
@@ -167,12 +293,12 @@ class Carnivore extends Animal{
 }
 
 class Grassland{
-    private int x;
-    private int y;
-    private int r;
+    private float x;
+    private float y;
+    private float r;
     private int grassAvailable;
 
-    public Grassland(int x, int y, int r, int grassAvailable){
+    public Grassland(float x, float y, float r, int grassAvailable){
         this.x = x;
         this.y = y;
         this.r = r;
@@ -194,35 +320,36 @@ class World{
         System.out.println("Enter Total Final Time for Simulation:");
         int tSim = rd.nextInt();
 
-        //int x, y;
+        float x, y;
+        /*
         System.out.println("Enter x, y centre, radius and Grass Available for First Grassland:");
-        int x = rd.nextInt();
-        int y = rd.nextInt();
-        int r = rd.nextInt();
+        float x = rd.nextFloat();
+        float y = rd.nextFloat();
+        float r = rd.nextFloat();
         int grassAvailable = rd.nextInt();
         Grassland g1 = new Grassland(x, y, r, grassAvailable);
 
         System.out.println("Enter x, y centre, radius and Grass Available for Second Grassland:");
-        x = rd.nextInt();
-        y = rd.nextInt();
-        r = rd.nextInt();
+        x = rd.nextFloat();
+        y = rd.nextFloat();
+        r = rd.nextFloat();
         grassAvailable = rd.nextInt();
         Grassland g2 = new Grassland(x, y, r, grassAvailable);
-
+*/
         System.out.println("Enter Health and Grass Capacity for Herbivores:");
         int healthH = rd.nextInt();
         int grassCap = rd.nextInt();
         
         System.out.println("Enter x, y position and timestamp for First Herbivore:");
-        x = rd.nextInt();
-        y = rd.nextInt();
+        x = rd.nextFloat();
+        y = rd.nextFloat();
         int t = rd.nextInt();
         Herbivore h1 = new Herbivore(x, y, t, healthH, grassCap);
         pq.insert(h1);
 
         System.out.println("Enter x, y position and timestamp for Second Herbivore:");
-        x = rd.nextInt();
-        y = rd.nextInt();
+        x = rd.nextFloat();
+        y = rd.nextFloat();
         t = rd.nextInt();
         Herbivore h2 = new Herbivore(x, y, t);
         pq.insert(h2);
@@ -233,36 +360,45 @@ class World{
         //Carnivore a_Carnivore = new Carnivore(healthC);
 
         System.out.println("Enter x, y position and timestamp for First Carnivore:");
-        x = rd.nextInt();
-        y = rd.nextInt();
+        x = rd.nextFloat();
+        y = rd.nextFloat();
         t = rd.nextInt();
         Carnivore c1 = new Carnivore(x, y, t, healthC);
         pq.insert(c1);
 
         System.out.println("Enter x, y position and timestamp for Second Carnivore:");
-        x = rd.nextInt();
-        y = rd.nextInt();
+        x = rd.nextFloat();
+        y = rd.nextFloat();
         t = rd.nextInt();
         Carnivore c2 = new Carnivore(x, y, t);
         pq.insert(c2);
 
         //System.out.println("You entered:\nGrasslands:\n"+g1.toString()+"\n"+g2.toString());
-        //System.out.println("Herbivores:\n"+h1.toString()+"\n"+h2.toString());
-        //System.out.println("Carnivores:\n"+c1.toString()+"\n"+c2.toString());
+        System.out.println("Herbivores:\n"+h1.toString()+"\n"+h2.toString());
+        System.out.println("Carnivores:\n"+c1.toString()+"\n"+c2.toString());
 
+        System.out.println("Printing queue: ");
+        pq.printHeap();
+
+        pq.remove();
+
+System.out.println("Printing queue: ");
+
+
+        pq.printHeap();
+        pq.remove();
+
+System.out.println("Printing queue: ");
         
+        pq.printHeap();
+        pq.remove();
+
+   System.out.println("Printing queue: ");
+             pq.printHeap();
+        pq.remove();
+System.out.println("Printing queue: ");
         
-
-        
-        
-
-
-
-
-
-
-
-        
+        pq.printHeap();
 
         
         
