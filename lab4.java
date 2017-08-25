@@ -48,6 +48,10 @@ class MinHeap{
         size = 0;
     }
 
+    public boolean isEmpty(){
+        return size==0;
+    }
+
     public void insert(Animal newAnimal){
         if(size==maxSize){
             return;
@@ -116,11 +120,12 @@ class MinHeap{
         
     }
 
-    public void remove(){
+    public Animal remove(){
         Animal root = arr[0];
         arr[0] = arr[--size];
         //System.out.println("Trickling down");
         trickleDown();
+        return root;
         //System.out.println("Trickled down");
     }
 
@@ -207,28 +212,100 @@ class MinHeap{
         }
     }
 
+    public Animal iterateToGetNearestAnimal(int type, float x, float y){
+        int min = Integer.MAX_VALUE;
+        Animal out = arr[0];
+        for (int i=0; i<size ; i++ ) {
+            int dist = (int)Math.round(Math.sqrt((arr[i].getX()-x)*(arr[i].getX()-x) + (arr[i].getY()-y)*(arr[i].getY()-y)));
+            if (dist<min && type!=arr[i].getType()){
+                min = dist;
+                out = arr[i];
+            }
+
+            
+        }
+        return out;
+    }
+
 
 
 
 }
 
 abstract class Animal {
+    protected String name;
     protected float x;
     protected float y;
     protected int t;
     protected int health;
     protected int type;
+    protected static Grassland g1;
+    protected static Grassland g2;
+    Random random = new Random();
 
-    public Animal(float x, float y, int t, int health){
+    public Animal(String name, float x, float y, int t, int health){
+        this.name = name;
         this.x = x;
         this.y = y;
         this.t = t;
         this.health = health;
     }
 
+    public void updateTS(int t){
+        this.t = t;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+
+
+    public void setGrassland(Grassland g1, Grassland g2){
+        this.g1 = g1;
+        this.g2 = g2;
+    }
+
+    public void move(float fx, float fy, float dist){
+        float s = (float)Math.sqrt((fx-x)*(fx-x)+(fy-y)*(fy-y));
+        float costheta = (fx-x)/s;
+        float sintheta = (fy-y)/s;
+        x+=dist*costheta;
+        y+=dist*sintheta;
+
+    }
+
+    public float getX(){
+        return x;
+    }
+
+    public float getY(){
+        return y;
+    }
+
+    public Animal getNearestAnimal(MinHeap pq){
+        return pq.iterateToGetNearestAnimal(this.type, this.x, this.y);
+
+    }
+
+    public abstract void takeTurn(int numH, int numC, Animal nearestAnimal);
+
     public int getTimeStamp(){
         return t;
     }
+
+    public int inGrassland(){
+        boolean _x = Math.sqrt((this.x-g1.getX())*(this.x-g1.getX())+(this.y-g1.getY())*(this.y-g1.getY()))<=g1.getR();
+        if(_x){
+            return 1;
+        }
+        _x = Math.sqrt((this.x-g2.getX())*(this.x-g2.getX())+(this.y-g2.getY())*(this.y-g2.getY()))<=g2.getR();
+        if(_x){
+            return 2;
+        }
+        return 0;
+
+    } 
 
     public int getHealth(){
         return health;
@@ -242,6 +319,7 @@ abstract class Animal {
         return Math.sqrt(x*x+y*y);
     }
 
+    
 
     public String toString(){
         return "x: "+x+" y: "+y+" timestamp: "+t+" health: "+health;
@@ -255,37 +333,208 @@ class Herbivore extends Animal{
     private static int grassCap;
 
 
-    public Herbivore(float x, float y, int t){
-        super(x, y, t, initial_health);
+    public Herbivore(String name, float x, float y, int t){
+        super(name, x, y, t, initial_health);
         type = 1;
     }
 
-    public Herbivore(float x, float y, int t, int h, int grassCap){
-        super(x, y, t, h);
+    public Herbivore(String name, float x, float y, int t, int h, int grassCap){
+        super(name, x, y, t, h);
         this.initial_health = h;
         this.grassCap = grassCap;
         type = 1;
     }
 
+    public void goToNearestGrassland(){
+
+        float dist1 = (float)Math.sqrt((((this.x)-g1.getX()*(this.x)-g1.getX())+((this.x)-g1.getY()*(this.x)-g1.getY())));
+        float dist2 = (float)Math.sqrt((((this.x)-g2.getX()*(this.x)-g2.getX())+((this.x)-g2.getY()*(this.x)-g2.getY())));
+        float min = dist1;
+        if(dist2<dist1){
+            this.move(g2.getX(), g2.getY(), 5);
+            return;
+        }
+        this.move(g1.getX(), g1.getY(), 5);
+
+    }
+
+    @Override
+    public void takeTurn(int numH, int numC, Animal nearestAnimal){
+        if(numC==0){
+                if(this.inGrassland()==1){
+                    this.move(g2.getX(), g2.getY(), 5);
+                    this.health-=25;
+                    return;
+                }
+                if(this.inGrassland()==2){
+                    this.move(g1.getX(), g1.getY(), 5);
+                    this.health-=25;
+                    return;
+                }
+                
+                if(this.inGrassland()==0){
+                    int chance = random.nextInt();
+                    if(chance<50){
+                    this.goToNearestGrassland();}
+                    return;
+                }       
+
+
+        }
+
+        else{
+            if(this.inGrassland()==0){
+                int chance = random.nextInt(100);
+                if(chance<95){
+                    chance = random.nextInt(100);
+                    if(chance<65){
+                    this.goToNearestGrassland();
+                    }
+                    if(chance>=65){
+                    this.move(nearestAnimal.getX(), nearestAnimal.getY(), -4);
+                    }
+
+                }
+            }
+            if(this.inGrassland()==1){
+                if(g1.grassAvailable()>=this.grassCap){
+                    int chance = random.nextInt(100);
+                    if(chance<90){
+                        g1.subGrass(this.grassCap);
+                        this.health+=(this.health/2);}
+                    else{
+                        chance = random.nextInt(100);
+                        if(chance<50){
+                            this.move(nearestAnimal.getX(), nearestAnimal.getY(), -2);
+                            health-=25;
+                        }
+                        else{
+                            this.move(g2.getX(), g2.getY(), 3);
+                            health-=25;}
+                    }
+                    return;
+
+                }
+                if(g1.grassAvailable()<this.grassCap){
+                    int chance = random.nextInt(100);
+                    if(chance>=80){
+                        g1.subGrass(g1.grassAvailable());
+                        this.health+=(this.health/5);
+
+                    }
+                    else{
+                        chance = random.nextInt(100);
+                        if(chance<70)
+                            this.move(nearestAnimal.getX(), nearestAnimal.getY(), -4);
+                        else
+                            this.move(g2.getX(), g2.getY(), 2);
+
+                        health-=25;
+                    }
+                    return;
+                }
+            }
+
+            if(this.inGrassland()==2){
+                if(g2.grassAvailable()>=this.grassCap){
+                    int chance = random.nextInt(100);
+                    if(chance<90){
+                        g2.subGrass(this.grassCap);
+                        this.health+=(this.health/2);}
+                    else{
+                        chance = random.nextInt(100);
+                        if(chance<50){
+                            this.move(nearestAnimal.getX(), nearestAnimal.getY(), -2);
+                        }
+                        else
+                            this.move(g1.getX(), g1.getY(), 3);
+                        health-=25;
+                    }
+                    return;
+
+                }
+                if(g2.grassAvailable()<this.grassCap){
+                    int chance = random.nextInt(100);
+                    if(chance>=80){
+                        g2.subGrass(g2.grassAvailable());
+                        this.health+=(this.health/5);
+                    }
+                    else{
+                        chance = random.nextInt(100);
+                        if(chance<70)
+                            this.move(nearestAnimal.getX(), nearestAnimal.getY(), -4);
+                        else
+                            this.move(g1.getX(), g1.getY(), 2);
+                        health-=25;
+                    }
+                    return;
+
+
+                }
+
+            }
+        }
+    }
+
+
     public String toString(){
         return super.toString()+" grassCap: "+grassCap;
     }
-
 }
+
+
+
 
 class Carnivore extends Animal{
     private static int initial_health;
 
 
-    public Carnivore(float x, float y, int t){
-        super(x, y, t, initial_health);
+    public Carnivore(String name, float x, float y, int t){
+        super(name, x, y, t, initial_health);
         type = 0;
     }
 
-    public Carnivore(float x, float y, int t, int h){
-        super(x, y, t, h);
+    public Carnivore(String name, float x, float y, int t, int h){
+        super(name, x, y, t, h);
         this.initial_health = h;
         type = 0;
+    }
+
+    @Override
+    public void takeTurn(int numH, int numC, Animal nearestAnimal){
+        if(numH>0){
+            if(Math.sqrt((this.x-nearestAnimal.getX())*(this.x-nearestAnimal.getX())+(this.y-nearestAnimal.getY())*(this.y-nearestAnimal.getY()))<=1){
+                //kill and eat;
+                health+=(2*nearestAnimal.getHealth())/3;
+                return;
+            }
+            if(this.inGrassland()==0){
+                Random random = new Random();
+                if(random.nextInt(100)<92){
+                    this.move(nearestAnimal.getX(), nearestAnimal.getY(), 4);
+                }
+
+                return;
+            }
+            else{
+                Random random = new Random();
+                if(random.nextInt(100)<75){
+                    this.move(nearestAnimal.getX(), nearestAnimal.getY(), 2);
+                }
+
+                return;
+            }
+
+        }
+        else{
+            if(this.inGrassland()==0){
+                health-=60;
+            }
+            else{
+                health-=30;
+            }
+        }
+
     }
 
     
@@ -305,6 +554,27 @@ class Grassland{
         this.grassAvailable = grassAvailable;
     }
 
+    public float getX(){
+        return x;
+    }
+
+
+    public float getY(){
+        return y;
+    }
+
+    public float getR(){
+        return r;
+    }
+
+    public int grassAvailable(){
+        return grassAvailable;
+    }
+
+    public void subGrass(int eaten){
+        grassAvailable-=eaten;
+    }
+
     public String toString(){
         return "x: "+x+" y: "+y+" radius: "+r+" grass available: "+grassAvailable;
     }
@@ -316,12 +586,16 @@ class World{
     public static void main(String[] args) throws IOException{
         Reader rd = new Reader();
         MinHeap pq = new MinHeap(4);
+        int numH = 0;
+        int numC = 0;
 
         System.out.println("Enter Total Final Time for Simulation:");
-        int tSim = rd.nextInt();
+        int time = rd.nextInt();
+        int counter = time;
+        int maxTS = 0;
 
-        float x, y;
-        /*
+       
+        
         System.out.println("Enter x, y centre, radius and Grass Available for First Grassland:");
         float x = rd.nextFloat();
         float y = rd.nextFloat();
@@ -335,7 +609,7 @@ class World{
         r = rd.nextFloat();
         grassAvailable = rd.nextInt();
         Grassland g2 = new Grassland(x, y, r, grassAvailable);
-*/
+
         System.out.println("Enter Health and Grass Capacity for Herbivores:");
         int healthH = rd.nextInt();
         int grassCap = rd.nextInt();
@@ -344,15 +618,24 @@ class World{
         x = rd.nextFloat();
         y = rd.nextFloat();
         int t = rd.nextInt();
-        Herbivore h1 = new Herbivore(x, y, t, healthH, grassCap);
+        if(t>maxTS){
+            maxTS = t;
+        }
+        Herbivore h1 = new Herbivore("First Herbivore", x, y, t, healthH, grassCap);
+        h1.setGrassland(g1, g2);
         pq.insert(h1);
+        numH++;
 
         System.out.println("Enter x, y position and timestamp for Second Herbivore:");
         x = rd.nextFloat();
         y = rd.nextFloat();
         t = rd.nextInt();
-        Herbivore h2 = new Herbivore(x, y, t);
+        if(t>maxTS){
+            maxTS = t;
+        }
+        Herbivore h2 = new Herbivore("Second Herbivore",x, y, t);
         pq.insert(h2);
+        numH++;
 
 
         System.out.println("Enter Health for Carnivores:");
@@ -363,19 +646,64 @@ class World{
         x = rd.nextFloat();
         y = rd.nextFloat();
         t = rd.nextInt();
-        Carnivore c1 = new Carnivore(x, y, t, healthC);
+        if(t>maxTS){
+            maxTS = t;
+        }
+        Carnivore c1 = new Carnivore("First Carnivore",x, y, t, healthC);
         pq.insert(c1);
+        numC++;
 
         System.out.println("Enter x, y position and timestamp for Second Carnivore:");
         x = rd.nextFloat();
         y = rd.nextFloat();
         t = rd.nextInt();
-        Carnivore c2 = new Carnivore(x, y, t);
+        if(t>maxTS){
+            maxTS = t;
+        }
+        Carnivore c2 = new Carnivore("Second Carnivore",x, y, t);
         pq.insert(c2);
+        numC++;
 
         //System.out.println("You entered:\nGrasslands:\n"+g1.toString()+"\n"+g2.toString());
         //System.out.println("Herbivores:\n"+h1.toString()+"\n"+h2.toString());
         //System.out.println("Carnivores:\n"+c1.toString()+"\n"+c2.toString());
+        System.out.println("Printing queue: ");
+        pq.printHeap();
+
+        while(!pq.isEmpty() && counter!=0){
+        Animal curAnimal = pq.remove();
+        System.out.println("Printing queue: ");
+        pq.printHeap();
+
+        Animal nearestAnimal = curAnimal.getNearestAnimal(pq);
+        curAnimal.takeTurn(numC, numH, nearestAnimal);
+        counter--;
+        System.out.println("It's "+curAnimal.getName());
+        if(curAnimal.getHealth()>=0){
+            System.out.println("It's health after taking turn is "+curAnimal.getHealth()+".");
+            Random random = new Random();
+            int ranTS = random.nextInt(time - maxTS) + maxTS;
+            if(ranTS!=(time-1)){
+                curAnimal.updateTS(ranTS);
+                pq.insert(curAnimal);
+                if(ranTS>maxTS){
+                    maxTS = ranTS;
+                }
+            }
+        }
+        else{
+            System.out.println("It is dead."+curAnimal.getHealth());
+        }
+    }
+
+        
+
+
+
+
+
+
+
 
         
 
@@ -383,3 +711,4 @@ class World{
         
     }
 }
+
