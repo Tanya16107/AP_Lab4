@@ -684,6 +684,7 @@ class Carnivore extends Animal{
                 System.out.println("The C is near 1 mile radius of H.");
                 pq.eat(nearestAnimal);
                 System.out.println("It ate ->"+nearestAnimal.toString());
+                numH-=1;
                 health+=(2*nearestAnimal.getHealth())/3;
                 System.out.println("The carnivore's health was hence incremented by 2/3rds and its health now is "+health);
                 return;
