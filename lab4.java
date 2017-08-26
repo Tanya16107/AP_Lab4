@@ -378,66 +378,67 @@ class Herbivore extends Animal{
     @Override
     public void takeTurn(int numC, int numH, Animal nearestAnimal, MinHeap pq){
         if(numC==0){
-            System.out.println("Number of carnivores is 0.");
+            //System.out.println("Number of carnivores is 0.");
                 if(this.inGrassland()==1){
-                    System.out.println("It's in grassland 1");
+                    //System.out.println("It's in grassland 1");
                     int chance = random.nextInt(100);
-                    System.out.println("Random number generated is "+chance);
+                    //System.out.println("Random number generated is "+chance);
                     if(chance<50){
-                    System.out.println("Since chance was greater than 50%");
+                    //System.out.println("Since chance was greater than 50%");
                     this.move(g2.getX(), g2.getY(), 5);
-                    System.out.println("the animal moved towards grassland 2 and is now at "+this.x+" "+this.y);
+                    //System.out.println("the animal moved towards grassland 2 and is now at "+this.x+" "+this.y);
                     this.health-=25;
-                    System.out.println("Since it chose to not stay, health is "+health);
+                    //System.out.println("Since it chose to not stay, health is "+health);
                     }
                     else{
-                        System.out.println("Since chance was less than 50%");
+                        //System.out.println("Since chance was less than 50%");
                         if(g1.grassAvailable()>=this.grassCap){
-                            System.out.println("grassAvailable in grassland 1 is greater than its capacity and equal to "+g1.grassAvailable());
+                            //System.out.println("grassAvailable in grassland 1 is greater than its capacity and equal to "+g1.grassAvailable());
                             g1.subGrass(this.grassCap);
-                            System.out.println("The H ate to its full capacity and grassland 1 now has grass available = "+g1.grassAvailable());
+                            //System.out.println("The H ate to its full capacity and grassland 1 now has grass available = "+g1.grassAvailable());
                             this.health+=(this.health/2);
-                            System.out.print(" and the H's health has been incremented by 50% and is now "+health+"\n");
+                            //System.out.print(" and the H's health has been incremented by 50% and is now "+health+"\n");
          
                         }
                         else{
-                            System.out.println("grassAvailable in grassland 1 is less than its capacity and equal to "+g1.grassAvailable());
+                            //System.out.println("grassAvailable in grassland 1 is less than its capacity and equal to "+g1.grassAvailable());
                             g1.subGrass(g1.grassAvailable());
-                            System.out.print(" the H ate all the grass in the grassland and grass available there is now "+g1.grassAvailable());
+                            //System.out.print(" the H ate all the grass in the grassland and grass available there is now "+g1.grassAvailable());
                             this.health+=(this.health/5);
-                            System.out.print(" and the health was incremented by 0.2 and is now "+health+"\n");
+                            //System.out.print(" and the health was incremented by 0.2 and is now "+health+"\n");
                             }
                     }
                     return;
                 }
 
                 if(this.inGrassland()==2){
-                    System.out.println("It's in grassland 2");
+                    //System.out.println("It's in grassland 2");
                     int chance = random.nextInt(100);
-                    System.out.println("Random number generated is "+chance);
+                    //System.out.println("Random number generated is "+chance);
                     if(chance<50){
-                        System.out.println("Since chance was greater than 50%");
+                        //System.out.println("Since chance was greater than 50%");
                     this.move(g1.getX(), g1.getY(), 5);
-                    System.out.println("the animal moved towards grassland 1 and is now at "+this.x+" "+this.y);
+                    //System.out.println("the animal moved towards grassland 1 and is now at "+this.x+" "+this.y);
                     this.health-=25;
-                System.out.println("Since it chose to not stay, health is "+health);}
+                //System.out.println("Since it chose to not stay, health is "+health);
+            }
 
                 else{
                         System.out.println("Since chance was less than 50%");
                         if(g2.grassAvailable()>=this.grassCap){
-                            System.out.println("grassAvailable in grassland 2 is greater than its capacity and equal to "+g2.grassAvailable());
+                            //System.out.println("grassAvailable in grassland 2 is greater than its capacity and equal to "+g2.grassAvailable());
                             g2.subGrass(this.grassCap);
-                            System.out.println("The H ate to its full capacity and grassland 1 now has grass available = "+g2.grassAvailable());
+                            //System.out.println("The H ate to its full capacity and grassland 1 now has grass available = "+g2.grassAvailable());
                             this.health+=(this.health/2);
-                            System.out.print(" and the H's health has been incremented by 50% and is now "+health+"\n");
+                            //System.out.print(" and the H's health has been incremented by 50% and is now "+health+"\n");
          
                         }
                         else{
-                            System.out.println("grassAvailable in grassland 2 is less than its capacity and equal to "+g2.grassAvailable());
+                            //System.out.println("grassAvailable in grassland 2 is less than its capacity and equal to "+g2.grassAvailable());
                             g2.subGrass(g2.grassAvailable());
-                            System.out.print(" the H ate all the grass in the grassland and grass available there is now "+g2.grassAvailable());
+                            //System.out.print(" the H ate all the grass in the grassland and grass available there is now "+g2.grassAvailable());
                             this.health+=(this.health/5);
-                            System.out.print(" and the health was incremented by 0.2 and is now "+health+"\n");
+                            //System.out.print(" and the health was incremented by 0.2 and is now "+health+"\n");
                             }
                     }
                     return;
@@ -445,10 +446,11 @@ class Herbivore extends Animal{
                 
                 if(this.inGrassland()==0){
                     int chance = random.nextInt(100);
-                    System.out.println("It's NOT in grassland");
+                    //System.out.println("It's NOT in grassland");
                     if(chance<50){
                     this.goToNearestGrassland();
-                    System.out.println("the animal moved towards nearest grassland and is now at "+this.x+" "+this.y);}
+                    //System.out.println("the animal moved towards nearest grassland and is now at "+this.x+" "+this.y);
+                }
                     return;
                 }       
 
