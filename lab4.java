@@ -679,28 +679,28 @@ class Carnivore extends Animal{
     @Override
     public void takeTurn(int numC, int numH, Animal nearestAnimal, MinHeap pq){
         if(numH>0){
-            System.out.println("No. of herbivores = "+numH);
+            //System.out.println("No. of herbivores = "+numH);
             if(Math.sqrt((this.x-nearestAnimal.getX())*(this.x-nearestAnimal.getX())+(this.y-nearestAnimal.getY())*(this.y-nearestAnimal.getY()))<=1 && nearestAnimal.getType()==1){
-                System.out.println("The C is near 1 mile radius of H.");
+                //System.out.println("The C is near 1 mile radius of H.");
                 pq.eat(nearestAnimal);
-                System.out.println("It ate ->"+nearestAnimal.toString());
+                //System.out.println("It ate ->"+nearestAnimal.toString());
                 numH-=1;
                 health+=(2*nearestAnimal.getHealth())/3;
-                System.out.println("The carnivore's health was hence incremented by 2/3rds and its health now is "+health);
+                //System.out.println("The carnivore's health was hence incremented by 2/3rds and its health now is "+health);
                 return;
             }
             if(this.inGrassland()==0){
-                System.out.println("It's not within a mile of H and not in Grassland either");
+                //System.out.println("It's not within a mile of H and not in Grassland either");
                 Random random = new Random();
                 if(random.nextInt(100)<92){
-                    System.out.println("Since chance was greater than 92%");
+                    //System.out.println("Since chance was greater than 92%");
                     this.move(nearestAnimal.getX(), nearestAnimal.getY(), 4);
-                    System.out.print(" it moved 4 units towards the nearestHerbivore and is now at "+x+","+y+"\n");
+                    //System.out.print(" it moved 4 units towards the nearestHerbivore and is now at "+x+","+y+"\n");
                 }
                 else{
-                    System.out.println("Since chance was less than 92%, it stayed");
+                    //System.out.println("Since chance was less than 92%, it stayed");
                     this.health-=60;
-                    System.out.println("Health decremented by 60 and is now "+this.health);
+                   // System.out.println("Health decremented by 60 and is now "+this.health);
                     
 
                 }
@@ -708,18 +708,18 @@ class Carnivore extends Animal{
                 return;
             }
             else{
-                System.out.println("It's not within 1 mile of a H but in Grassland");
+                //System.out.println("It's not within 1 mile of a H but in Grassland");
                 Random random = new Random();
                 if(random.nextInt(100)<75){
-                    System.out.println("Since chance was greater than 75%");
+                    //System.out.println("Since chance was greater than 75%");
                     this.move(nearestAnimal.getX(), nearestAnimal.getY(), 2);
-                    System.out.print(" it moved 2 units towards the nearestHerbivore and is now at "+x+","+y+"\n");
+                    //System.out.print(" it moved 2 units towards the nearestHerbivore and is now at "+x+","+y+"\n");
 
                 }
                 else{
-                    System.out.println("Since chance was less than 75%, it stayed");
+                    //System.out.println("Since chance was less than 75%, it stayed");
                     this.health-=30;
-                    System.out.println("Health decremented by 30 and is now "+this.health);
+                    //System.out.println("Health decremented by 30 and is now "+this.health);
                     
 
                 }
@@ -731,16 +731,16 @@ class Carnivore extends Animal{
 
         }
         else{
-            System.out.println("No herbivores.");
+            //System.out.println("No herbivores.");
             if(this.inGrassland()==0){
-                System.out.println("Not in Grassland and staying");
+                //System.out.println("Not in Grassland and staying");
                 health-=60;
-                System.out.print(" hence, its health was decremented by 60 and is now "+health+"\n");
+                //System.out.print(" hence, its health was decremented by 60 and is now "+health+"\n");
             }
             else{
-                System.out.println("In Grassland and staying");
+                //System.out.println("In Grassland and staying");
                 health-=30;
-                System.out.print(" hence, its health was decremented by 30 and is now "+health+"\n");
+                //System.out.print(" hence, its health was decremented by 30 and is now "+health+"\n");
             }
         }
 
@@ -758,20 +758,20 @@ class Carnivore extends Animal{
 
     @Override
     public void additional(Animal nearestAnimal){
-        System.out.println("The current animal is C.");
+        //System.out.println("The current animal is C.");
             if(this.nearHerbivore(nearestAnimal)!=0){
-                System.out.println("The Carnivore is near Herbivore");
+                //System.out.println("The Carnivore is near Herbivore");
             turnsNotNearHerbivore=0;
-                System.out.println("So, its turns not near Herbivores is "+turnsNotNearHerbivore);
+                //System.out.println("So, its turns not near Herbivores is "+turnsNotNearHerbivore);
         }
         else{
-            System.out.println("The Carnivore is NOT near Herbivore");
+            //System.out.println("The Carnivore is NOT near Herbivore");
             turnsNotNearHerbivore++;
-            System.out.println("So, its turns not near Herbivores = "+turnsNotNearHerbivore);
+            //System.out.println("So, its turns not near Herbivores = "+turnsNotNearHerbivore);
             if(turnsNotNearHerbivore>7){
-                System.out.println("Since turns not nearHerbivore = "+turnsNotNearHerbivore);
+                //System.out.println("Since turns not nearHerbivore = "+turnsNotNearHerbivore);
                 this.health-=6;
-                System.out.println("It's health has been reduced by 6 and is now "+health);
+                //System.out.println("It's health has been reduced by 6 and is now "+health);
             }
         }
     }
