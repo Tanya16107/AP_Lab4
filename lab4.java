@@ -424,7 +424,7 @@ class Herbivore extends Animal{
             }
 
                 else{
-                        System.out.println("Since chance was less than 50%");
+                        //System.out.println("Since chance was less than 50%");
                         if(g2.grassAvailable()>=this.grassCap){
                             //System.out.println("grassAvailable in grassland 2 is greater than its capacity and equal to "+g2.grassAvailable());
                             g2.subGrass(this.grassCap);
@@ -612,7 +612,7 @@ class Herbivore extends Animal{
                             //System.out.print(" the H moved away from nearestAnimal and is now at "+x+","+y);
                         }
                         else{
-                            System.out.println("Since chance was less than 70%");
+                            //System.out.println("Since chance was less than 70%");
                             this.move(g1.getX(), g1.getY(), 2);
                             //System.out.print(" the H moved 2 units towards nearest Grassland and is now at "+x+","+y);
                         }
