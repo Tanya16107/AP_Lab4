@@ -916,17 +916,17 @@ class World{
 
         while(!pq.isEmpty() && counter!=0){
             System.out.println("");
-        System.out.println("Status of pq:");
-        pq.printHeap();
+        //System.out.println("Status of pq:");
+        //pq.printHeap();
 
         Animal curAnimal = pq.remove();
         curAnimal.setGrassland(g1, g2);
-        System.out.println("The animal whose turn is");
-        System.out.println(curAnimal.toString());
+        //System.out.println("The animal whose turn is");
+        //System.out.println(curAnimal.toString());
 
         Animal nearestAnimal = curAnimal.getNearestAnimal(pq);
-        System.out.println("The nearestAnimal is");
-        System.out.println(nearestAnimal.toString());
+        //System.out.println("The nearestAnimal is");
+        //System.out.println(nearestAnimal.toString());
 
         
 
@@ -937,7 +937,7 @@ class World{
         counter--;
         System.out.println("It's "+curAnimal.getName());
         if(curAnimal.getHealth()>=0){
-            System.out.println("It's health after taking turn is "+curAnimal.getHealth()+".");
+            System.out.println("Its health after taking turn is "+curAnimal.getHealth()+".");
             Random random = new Random();
             int ranTS = random.nextInt(time - maxTS) + maxTS;
             if(ranTS!=(time-1)){
@@ -951,25 +951,27 @@ class World{
                 pq.eat(curAnimal);
                 if(curAnimal.getType()==1){
                 numH-=1;
-                System.out.println("No. of herbivores was decremented and are now "+numH);
+                //System.out.println("No. of herbivores was decremented and are now "+numH);
             }
             else{
                 numC-=1;
 
-                System.out.println("No. of carnivores was decremented and are now "+numC);}
+                //System.out.println("No. of carnivores was decremented and are now "+numC);
+            }
 
             }
         }
         else{
-            System.out.println("It is dead."+curAnimal.getHealth()+" "+curAnimal.getType());
+            System.out.println("It is dead.");
             if(curAnimal.getType()==1){
                 numH-=1;
-                System.out.println("No. of herbivores was decremented and are now "+numH);
+                //System.out.println("No. of herbivores was decremented and are now "+numH);
             }
             else{
                 numC-=1;
 
-                System.out.println("No. of carnivores was decremented and are now "+numC);}
+                //System.out.println("No. of carnivores was decremented and are now "+numC);
+            }
         }
     }
 
@@ -977,4 +979,3 @@ class World{
         
     }
 }
-
