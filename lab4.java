@@ -115,10 +115,22 @@ class MinHeap{
 
             }
 
+        }     
+    }
+
+    public void eat(Animal h){
+        for (int i=0; i<size; i++) {
+            if(h.getName()==arr[i].getName()){
+                Animal temp = arr[0];
+                arr[0] = h;
+                arr[i] = temp;
+                this.remove();
+                return;
+            }
         }
 
-        
     }
+
 
     public Animal remove(){
         Animal root = arr[0];
@@ -272,6 +284,8 @@ abstract class Animal {
         float sintheta = (fy-y)/s;
         x+=dist*costheta;
         y+=dist*sintheta;
+        x = Math.round(x);
+        y = Math.round(y);
 
     }
 
@@ -288,7 +302,9 @@ abstract class Animal {
 
     }
 
-    public abstract void takeTurn(int numH, int numC, Animal nearestAnimal);
+    public abstract void takeTurn(int numH, int numC, Animal nearestAnimal, MinHeap pq);
+
+    public abstract void additional(Animal nearestAnimal);
 
     public int getTimeStamp(){
         return t;
@@ -331,6 +347,7 @@ abstract class Animal {
 class Herbivore extends Animal{
     private static int initial_health;
     private static int grassCap;
+    private int turnsOutsideGrassland = 0;
 
 
     public Herbivore(String name, float x, float y, int t){
@@ -359,16 +376,21 @@ class Herbivore extends Animal{
     }
 
     @Override
-    public void takeTurn(int numH, int numC, Animal nearestAnimal){
+    public void takeTurn(int numH, int numC, Animal nearestAnimal, MinHeap pq){
         if(numC==0){
                 if(this.inGrassland()==1){
+                    int chance = random.nextInt();
+                    if(chance<50){
                     this.move(g2.getX(), g2.getY(), 5);
-                    this.health-=25;
+                    this.health-=25;}
                     return;
                 }
+
                 if(this.inGrassland()==2){
+                    int chance = random.nextInt();
+                    if(chance<50){
                     this.move(g1.getX(), g1.getY(), 5);
-                    this.health-=25;
+                    this.health-=25;}
                     return;
                 }
                 
@@ -477,6 +499,22 @@ class Herbivore extends Animal{
     }
 
 
+    @Override
+    public void additional(Animal nearestAnimal){
+                if(this.inGrassland()!=0){
+            turnsOutsideGrassland=0;
+        }
+        else{
+            turnsOutsideGrassland++;
+            if(turnsOutsideGrassland>7){
+                this.health-=5;
+            }
+        }
+
+
+    }
+
+
     public String toString(){
         return super.toString()+" grassCap: "+grassCap;
     }
@@ -487,6 +525,8 @@ class Herbivore extends Animal{
 
 class Carnivore extends Animal{
     private static int initial_health;
+    private int turnsNotNearHerbivore = 0 ;
+
 
 
     public Carnivore(String name, float x, float y, int t){
@@ -501,10 +541,10 @@ class Carnivore extends Animal{
     }
 
     @Override
-    public void takeTurn(int numH, int numC, Animal nearestAnimal){
+    public void takeTurn(int numH, int numC, Animal nearestAnimal, MinHeap pq){
         if(numH>0){
             if(Math.sqrt((this.x-nearestAnimal.getX())*(this.x-nearestAnimal.getX())+(this.y-nearestAnimal.getY())*(this.y-nearestAnimal.getY()))<=1){
-                //kill and eat;
+                pq.eat(nearestAnimal);
                 health+=(2*nearestAnimal.getHealth())/3;
                 return;
             }
@@ -535,6 +575,28 @@ class Carnivore extends Animal{
             }
         }
 
+    }
+
+    public int nearHerbivore(Animal nearestAnimal){
+        if(Math.sqrt((this.x-nearestAnimal.getX())*(this.x-nearestAnimal.getX())+(this.y-nearestAnimal.getY())*(this.y-nearestAnimal.getY()))<=5){
+            return 1;
+        }
+        else
+            return 0;
+
+    }
+
+    @Override
+    public void additional(Animal nearestAnimal){
+                if(this.nearHerbivore(nearestAnimal)!=0){
+            turnsNotNearHerbivore=0;
+        }
+        else{
+            turnsNotNearHerbivore++;
+            if(turnsNotNearHerbivore>7){
+                this.health-=6;
+            }
+        }
     }
 
     
@@ -672,11 +734,15 @@ class World{
 
         while(!pq.isEmpty() && counter!=0){
         Animal curAnimal = pq.remove();
-        System.out.println("Printing queue: ");
-        pq.printHeap();
-
+        //System.out.println("Printing queue: ");
+        //pq.printHeap();
         Animal nearestAnimal = curAnimal.getNearestAnimal(pq);
-        curAnimal.takeTurn(numC, numH, nearestAnimal);
+
+        curAnimal.additional(nearestAnimal);
+
+
+        curAnimal.takeTurn(numC, numH, nearestAnimal, pq);
+
         counter--;
         System.out.println("It's "+curAnimal.getName());
         if(curAnimal.getHealth()>=0){
@@ -695,17 +761,6 @@ class World{
             System.out.println("It is dead."+curAnimal.getHealth());
         }
     }
-
-        
-
-
-
-
-
-
-
-
-        
 
         
         
